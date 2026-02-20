@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem 3.1: Propositional Logic for the Hazardous Warehouse</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #1a1a1a;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #34495e;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .grid-layout {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-family: monospace;
+            text-align: center;
+            line-height: 1.8;
+        }
+        .formula-section {
+            background: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .formula-section p {
+            margin: 8px 0;
+            text-align: center;
+        }
+        .step-box {
+            background: #f0f7ff;
+            padding: 15px;
+            border-left: 4px solid #27ae60;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .step-box h4 {
+            margin-top: 0;
+            color: #27ae60;
+        }
+        .step-box ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        .step-box li {
+            margin: 8px 0;
+        }
+        .knowledge-summary {
+            background: #fffacd;
+            padding: 15px;
+            border-left: 4px solid #f39c12;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f0f0f0;
+        }
+        .scenario {
+            margin: 30px 0;
+            padding: 20px;
+            border-left: 4px solid #3498db;
+            background: #ecf0f1;
+            border-radius: 4px;
+        }
+        .scenario h2 {
+            margin-top: 0;
+        }
+        .findings {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            margin-top: 15px;
+        }
+        .findings h3 {
+            color: #2980b9;
+            margin-top: 0;
+        }
+        .provably-safe {
+            background: #c6f6d5;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .table-container {
+                font-size: 0.9em;
+            }
+            table th, table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Problem 3.1: Propositional Logic for the Hazardous Warehouse</h1>
+        
+        <h2>Grid Layout (for reference):</h2>
+        <div class="grid-layout">
+            (1,3) -- (2,3) -- (3,3)<br/>
+            &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br/>
+            (1,2) -- (2,2) -- (3,2)<br/>
+            &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br/>
+            (1,1) -- (2,1) -- (3,1)<br/>
+        </div>
+
+        <h2>1. Physics Encoding</h2>
+        <p><strong>Creating rules</strong> — 9 biconditionals, one per square. Creaking at (i,j) if damaged floor in at least one adjacent square:</p>
+        <div class="formula-section">
+            <p>$$C_{1,1} \Leftrightarrow D_{2,1} \vee D_{1,2}$$</p>
+            <p>$$C_{2,1} \Leftrightarrow D_{1,1} \vee D_{3,1} \vee D_{2,2}$$</p>
+            <p>$$C_{3,1} \Leftrightarrow D_{2,1} \vee D_{3,2}$$</p>
+            <p>$$C_{1,2} \Leftrightarrow D_{1,1} \vee D_{2,2} \vee D_{1,3}$$</p>
+            <p>$$C_{2,2} \Leftrightarrow D_{2,1} \vee D_{1,2} \vee D_{3,2} \vee D_{2,3}$$</p>
+            <p>$$C_{3,2} \Leftrightarrow D_{3,1} \vee D_{2,2} \vee D_{3,3}$$</p>
+            <p>$$C_{1,3} \Leftrightarrow D_{1,2} \vee D_{2,3}$$</p>
+            <p>$$C_{2,3} \Leftrightarrow D_{2,2} \vee D_{1,3} \vee D_{3,3}$$</p>
+            <p>$$C_{3,3} \Leftrightarrow D_{2,3} \vee D_{3,2}$$</p>
+        </div>
+
+        <p><strong>Rumbling rules</strong> — 9 biconditionals with the same structure, replacing C with R and D with F:</p>
+        <div class="formula-section">
+            <p>$$R_{1,1} \Leftrightarrow F_{2,1} \vee F_{1,2}$$</p>
+            <p>$$R_{2,1} \Leftrightarrow F_{1,1} \vee F_{3,1} \vee F_{2,2}$$</p>
+            <p>$$R_{3,1} \Leftrightarrow F_{2,1} \vee F_{3,2}$$</p>
+            <p>$$R_{1,2} \Leftrightarrow F_{1,1} \vee F_{2,2} \vee F_{1,3}$$</p>
+            <p>$$R_{2,2} \Leftrightarrow F_{2,1} \vee F_{1,2} \vee F_{3,2} \vee F_{2,3}$$</p>
+            <p>$$R_{3,2} \Leftrightarrow F_{3,1} \vee F_{2,2} \vee F_{3,3}$$</p>
+            <p>$$R_{1,3} \Leftrightarrow F_{1,2} \vee F_{2,3}$$</p>
+            <p>$$R_{2,3} \Leftrightarrow F_{2,2} \vee F_{1,3} \vee F_{3,3}$$</p>
+            <p>$$R_{3,3} \Leftrightarrow F_{2,3} \vee F_{3,2}$$</p>
+        </div>
+
+        <p><strong>Safety rules</strong> — 9 biconditionals:</p>
+        <div class="formula-section">
+            <p>$$S_{i,j} \Leftrightarrow \neg D_{i,j} \wedge \neg F_{i,j} \quad \text{for each } (i,j) \in \{1,2,3\}^2$$</p>
+        </div>
+
+        <p style="text-align: center; font-weight: bold; background: #e8f4f8; padding: 10px; border-radius: 4px;">Total: 27 propositional sentences encode the physics.</p>
+
+        <h2>2. Initial Knowledge</h2>
+        <p><strong>Starting square is safe:</strong></p>
+        <div class="formula-section">
+            <p>$$S_{1,1}$$</p>
+        </div>
+
+        <p>which, combined with the safety biconditional, entails $$\neg D_{1,1} \wedge \neg F_{1,1}$$</p>
+
+        <p><strong>At least one square has damaged floor:</strong></p>
+        <div class="formula-section">
+            <p>$$D_{1,1} \vee D_{2,1} \vee D_{3,1} \vee D_{1,2} \vee D_{2,2} \vee D_{3,2} \vee D_{1,3} \vee D_{2,3} \vee D_{3,3}$$</p>
+        </div>
+
+        <p><strong>At least one forklift — same structure with F:</strong></p>
+        <div class="formula-section">
+            <p>$$F_{1,1} \vee F_{2,1} \vee F_{3,1} \vee F_{1,2} \vee F_{2,2} \vee F_{3,2} \vee F_{1,3} \vee F_{2,3} \vee F_{3,3}$$</p>
+        </div>
+
+        <p style="text-align: center; font-weight: bold; background: #e8f4f8; padding: 10px; border-radius: 4px;">Total initial knowledge: 1 + 1 + 1 = 3 sentences.</p>
+
+        <h2>3. Scenario Reasoning</h2>
+        <h3>Percepts at (1, 1):</h3>
+        <div class="formula-section">
+            <p>$$\neg C_{1,1}, \quad \neg R_{1,1}$$</p>
+        </div>
+
+        <div class="step-box">
+            <h4>Step 1:</h4>
+            <p>From $$\neg C_{1,1}$$ and the creaking biconditional $$C_{1,1} \Leftrightarrow D_{2,1} \vee D_{1,2}$$:</p>
+            <p style="text-align: center; background: white; padding: 10px; border-radius: 3px; margin: 10px 0;">
+                $$\neg C_{1,1} \Rightarrow \neg(D_{2,1} \vee D_{1,2}) \Rightarrow \neg D_{2,1} \wedge \neg D_{1,2}$$
+            </p>
+        </div>
+
+        <div class="step-box">
+            <h4>Step 2:</h4>
+            <p>From $$\neg R_{1,1}$$ and the rumbling biconditional $$R_{1,1} \Leftrightarrow F_{2,1} \vee F_{1,2}$$:</p>
+            <p style="text-align: center; background: white; padding: 10px; border-radius: 3px; margin: 10px 0;">
+                $$\neg R_{1,1} \Rightarrow \neg(F_{2,1} \vee F_{1,2}) \Rightarrow \neg F_{2,1} \wedge \neg F_{1,2}$$
+            </p>
+        </div>
+
+        <div class="step-box">
+            <h4>Step 3:</h4>
+            <p>Apply the safety biconditionals to the newly cleared squares:</p>
+            <ul>
+                <li>(2, 1): $$\neg D_{2,1} \wedge \neg F_{2,1} \Rightarrow S_{2,1}$$ ✓</li>
+                <li>(1, 2): $$\neg D_{1,2} \wedge \neg F_{1,2} \Rightarrow S_{1,2}$$ ✓</li>
+            </ul>
+        </div>
+
+        <div class="step-box">
+            <h4>Step 4:</h4>
+            <p>For all other squares — (3, 1), (2, 2), (3, 2), (1, 3), (2, 3), (3, 3) — we have no information about either damage or forklift presence.<br/>
+            Their safety cannot be determined.</p>
+        </div>
+
+        <div class="provably-safe">
+            Provably safe squares: {(1, 1), (2, 1), (1, 2)}
+        </div>
+
+        <p><strong>Grid after observation at (1,1):</strong></p>
+        <div class="grid-layout">
+            ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1,3) (2,3) (3,3)<br/>
+            S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1,2) (2,2) (3,2)<br/>
+            S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1,1) (2,1) (3,1)<br/>
+        </div>
+
+        <h2>4. Exploration</h2>
+        <h3>New percepts at (2, 1):</h3>
+        <div class="formula-section">
+            <p>$$C_{2,1}, \quad \neg R_{2,1}$$</p>
+        </div>
+
+        <div class="step-box">
+            <h4>Step 1:</h4>
+            <p>From $$C_{2,1}$$ and $$C_{2,1} \Leftrightarrow D_{1,1} \vee D_{3,1} \vee D_{2,2}$$:</p>
+            <p style="text-align: center; background: white; padding: 10px; border-radius: 3px; margin: 10px 0;">
+                $$D_{1,1} \vee D_{3,1} \vee D_{2,2}$$
+            </p>
+            <p>We already know $$\neg D_{1,1}$$ (starting square is safe), so:</p>
+            <p style="text-align: center; background: white; padding: 10px; border-radius: 3px; margin: 10px 0;">
+                $$D_{3,1} \vee D_{2,2}$$
+            </p>
+        </div>
+
+        <div class="step-box">
+            <h4>Step 2:</h4>
+            <p>From $$\neg R_{2,1}$$ and $$R_{2,1} \Leftrightarrow F_{1,1} \vee F_{3,1} \vee F_{2,2}$$:</p>
+            <p style="text-align: center; background: white; padding: 10px; border-radius: 3px; margin: 10px 0;">
+                $$\neg F_{1,1} \wedge \neg F_{3,1} \wedge \neg F_{2,2}$$
+            </p>
+        </div>
+
+        <div class="step-box">
+            <h4>Step 3:</h4>
+            <p>Forklift exclusions so far: $$\neg F_{1,1}, \neg F_{2,1}, \neg F_{1,2}, \neg F_{3,1}, \neg F_{2,2}$$. The at-least-one-forklift constraint then tells us the forklift is at one or more of (3, 2), (1, 3), (2, 3), (3, 3).</p>
+        </div>
+
+        <div class="step-box">
+            <h4>Step 4:</h4>
+            <p>Check safety of each unknown square:</p>
+            <div class="table-container">
+                <table>
+                    <tr>
+                        <th>Square</th>
+                        <th>Damage?</th>
+                        <th>Forklift?</th>
+                        <th>Safe?</th>
+                    </tr>
+                    <tr>
+                        <td>(3, 1)</td>
+                        <td>Possible ($$D_{3,1} \vee D_{2,2}$$)</td>
+                        <td>$$\neg F_{3,1}$$</td>
+                        <td>Unknown</td>
+                    </tr>
+                    <tr>
+                        <td>(2, 2)</td>
+                        <td>Possible ($$D_{3,1} \vee D_{2,2}$$)</td>
+                        <td>$$\neg F_{2,2}$$</td>
+                        <td>Unknown</td>
+                    </tr>
+                    <tr>
+                        <td>(3, 2)</td>
+                        <td>Unknown</td>
+                        <td>Possible</td>
+                        <td>Unknown</td>
+                    </tr>
+                    <tr>
+                        <td>(1, 3)</td>
+                        <td>Unknown</td>
+                        <td>Possible</td>
+                        <td>Unknown</td>
+                    </tr>
+                    <tr>
+                        <td>(2, 3)</td>
+                        <td>Unknown</td>
+                        <td>Possible</td>
+                        <td>Unknown</td>
+                    </tr>
+                    <tr>
+                        <td>(3, 3)</td>
+                        <td>Unknown</td>
+                        <td>Possible</td>
+                        <td>Unknown</td>
+                    </tr>
+                </table>
+            </div>
+            <p>No individual square is provably dangerous. However, we know $$D_{3,1} \vee D_{2,2}$$, so at least one of (3, 1) and (2, 2) has damaged floor. Note that without an "exactly one" constraint, we cannot rule out damage at other unvisited squares either.</p>
+        </div>
+
+        <p><strong>Grid after observation at (2,1):</strong></p>
+        <div class="grid-layout">
+            ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1,3) (2,3) (3,3)<br/>
+            S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1,2) (2,2) (3,2)<br/>
+            S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1,1) (2,1) (3,1)<br/>
+        </div>
+
+        <div class="knowledge-summary">
+            <h3 style="margin-top: 0;">Key New Knowledge:</h3>
+            <p>At least one of (3, 1) and (2, 2) has damaged floor; the forklift is somewhere among the uncleared squares. The next useful move would be to explore (1, 2) — its percepts would help narrow down the damage and forklift locations.</p>
+        </div>
+    </div>
+</body>
+</html>
